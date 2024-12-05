@@ -41,7 +41,17 @@ jobs:
         mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} climate_db < sql/climate_data_table.sql
 
     - name: Schema Update
-      run: mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} project_db < sql/add_humidity_column.sql
+      run: |
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} project_db < sql/add_humidity_column.sql
 
     - name: Data Seeding
-      run: mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} project_db < sql/seed_data.sql
+      run: |
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} project_db < sql/seed_data.sql
+
+    - name: Concurrent Query Execution
+      run: python3 scripts/multi_thread_queries.py
+
+    - name: Validation Step
+      run: |
+        mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "DESCRIBE project_db.ClimateData;"
+        mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "SELECT * FROM project_db.ClimateData;"
