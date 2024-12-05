@@ -34,3 +34,8 @@ jobs:
       run: |
         mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} -e "DESCRIBE climate_db.ClimateData;"
         mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} -e "SELECT * FROM climate_db.ClimateData;"
+
+    - name: Initial Schema Deployment
+      run: |
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} -e "CREATE DATABASE IF NOT EXISTS climate_db;"
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} climate_db < sql/create_climate_data_table.sql
