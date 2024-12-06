@@ -18,35 +18,35 @@ jobs:
 
     - name: Initial Schema Deployment
       run: |
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} -e "CREATE DATABASE IF NOT EXISTS climate_db;"
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} project_db < sql/create_climate_data_table.sql
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} -e "CREATE DATABASE IF NOT EXISTS climate_admin;"
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} project_db < sql/create_climate_data_table.sql
 
     - name: Schema Update
-      run: mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} project_db < sql/add_humidity_column.sql
+      run: mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} project_db < sql/add_humidity_column.sql
 
     - name: Data Seeding
-      run: mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} project_db < sql/seed_data.sql
+      run: mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} project_db < sql/seed_data.sql
 
     - name: Concurrent Query Execution
       run: python3 scripts/multi_thread_queries.py
 
     - name: Validation Step
       run: |
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} -e "DESCRIBE climate_db.ClimateData;"
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} -e "SELECT * FROM climate_db.ClimateData;"
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} -e "DESCRIBE climate_admin.ClimateData;"
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} -e "SELECT * FROM climate_admin.ClimateData;"
 
     - name: Initial Schema Deployment
       run: |
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} -e "CREATE DATABASE IF NOT EXISTS climate_db;"
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} climate_db < sql/climate_data_table.sql
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} -e "CREATE DATABASE IF NOT EXISTS climate_admin;"
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} climate_admin < sql/climate_data_table.sql
 
     - name: Schema Update
       run: |
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} project_db < sql/add_humidity_column.sql
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} project_db < sql/add_humidity_column.sql
 
     - name: Data Seeding
       run: |
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_db }} -p${{ @Parttime2023 }} project_db < sql/seed_data.sql
+        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} project_db < sql/seed_data.sql
 
     - name: Concurrent Query Execution
       run: python3 scripts/multi_thread_queries.py
