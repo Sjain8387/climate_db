@@ -1,5 +1,3 @@
-name: CI/CD Pipeline
-
 on:
   push:
     branches:
@@ -13,45 +11,24 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up MySQL
+    - name: Set up MySQL client
       run: sudo apt-get install mysql-client
 
     - name: Initial Schema Deployment
       run: |
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} -e "CREATE DATABASE IF NOT EXISTS climate_admin;"
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} project_db < sql/create_climate_data_table.sql
+        mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "CREATE DATABASE IF NOT EXISTS ${ { secrets.DB_NAME }};"
+        mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} ${ { secrets.DB_NAME }} < sql/create_climate_data_table.sql
 
     - name: Schema Update
-      run: mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} project_db < sql/add_humidity_column.sql
+      run: mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} ${ { secrets.DB_NAME }} < sql/add_humidity_column.sql
 
     - name: Data Seeding
-      run: mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} project_db < sql/seed_data.sql
+      run: mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} ${ { secrets.DB_NAME }} < sql/seed_data.sql
 
     - name: Concurrent Query Execution
       run: python3 scripts/multi_thread_queries.py
 
     - name: Validation Step
       run: |
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} -e "DESCRIBE climate_admin.ClimateData;"
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} -e "SELECT * FROM climate_admin.ClimateData;"
-
-    - name: Initial Schema Deployment
-      run: |
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} -e "CREATE DATABASE IF NOT EXISTS climate_admin;"
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} climate_admin < sql/climate_data_table.sql
-
-    - name: Schema Update
-      run: |
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} project_db < sql/add_humidity_column.sql
-
-    - name: Data Seeding
-      run: |
-        mysql -h ${{ automated-mysql-server.database.windows.net }} -u ${{ climate_admin }} -p${{ @Kriyaansh241026 }} project_db < sql/seed_data.sql
-
-    - name: Concurrent Query Execution
-      run: python3 scripts/multi_thread_queries.py
-
-    - name: Validation Step
-      run: |
-        mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "DESCRIBE project_db.ClimateData;"
-        mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "SELECT * FROM project_db.ClimateData;"
+        mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "DESCRIBE ${ { secrets.DB_NAME }}.ClimateData;"
+        mysql -h ${{ secrets.DB_HOST }} -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} -e "SELECT * FROM ${ { secrets.DB_NAME }}.ClimateData;"
