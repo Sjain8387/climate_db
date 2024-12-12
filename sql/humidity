@@ -1,0 +1,1 @@
+ALTER TABLE ClimateData ADD humidity FLOAT NOT NULL;
